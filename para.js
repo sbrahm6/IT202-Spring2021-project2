@@ -124,6 +124,7 @@ window.onload = () => {
 
     let action = walk;
     let held = false;
+    let velocity = 0;
 
 
     // let charSprite = new CharacterSprite(charImage, 100, 200, 307, 282, 0);
@@ -151,84 +152,74 @@ window.onload = () => {
 
         if (frames % 4 == 0) {
 
-            if (frames % 300 == 0) {
-                document.addEventListener("keydown", (event) => {
-                    if (event.key == "ArrowRight") {
-                        console.log("ArrowRight key was pressed!");
+            // if (frames % 300 == 0) {
 
-                        if (!held) {
-                            held = true;
-                            action = run;
-                        }
-                        x++;
-                        // console.log(x);
+            // ------------------------------------------------------------------------
+            document.addEventListener("keydown", (event) => {
+                if (event.key == "ArrowRight" && action == walk) {
+                    // console.log("ArrowRight key was pressed!");
+                    held = true;
+                    action = run;
+                    velocity = 3;
 
+                } else if (event.key == "ArrowLeft" && action != jump) {
+                    // console.log("ArrowLeft key was pressed!");
+                    action = walk;
+                    velocity = -3;
+                } else if (event.key == "ArrowUp" && action != jump) {
+                    // console.log("ArrowUp key was pressed!");
+                    i = 1;
+                    action = jump;
 
-                    } else if (event.key == "ArrowLeft") {
-                        // console.log("ArrowLeft key was pressed!");
+                } else if (event.key == "k" && !held) {
+                    held = true;
+                    action = dead;
+                    i = 1;
+                    setTimeout(() => {
                         action = walk;
-                        x -= 1;
+                        i = 15;
+                        alert("Dead");
+                    }, 72 * (15 - i));  //calculated ~72 ms per animation frame (15 total)
+                    // FUNCTION CALL
 
-                    } else if (event.key == "ArrowUp") {
-                        if (!held) {
-                            held = true;
-                            action = jump;
-                            i = 1;
+                }
 
-                            // setTimeout(() => {
-                            //     action = walk;
-                            // }, 72 * (15 - i));  //calculated ~72 ms per animation frame (15 total)
-                        }
+            });
 
-                    } else if (event.key == "k") {
-                        if (!held) {
-                            held = true;
-                            action = dead;
-                            i = 1;
-                            setTimeout(() => {
-                                action = walk;
-                            }, 72 * (15 - i));  //calculated ~72 ms per animation frame (15 total)
-                        }
-                        // FUNCTION CALL
-
-                    } else {
-                        action = walk;
-                    }
-
-                });
-            }
+            // -------------------------------------------------------------------------------------------------
+            // }
 
             if (action == jump) {
                 y = 4 * (i * i) - (60 * i) + 200; //equation derived through testing (parabola equation)
                 action = (i == 15) ? walk : jump;
-                held = (action == walk) ? false : true;
+                velocity = (action == walk) ? 0 : velocity;
             }
+
+
+            document.addEventListener("keyup", (event) => {
+
+                if (event.key == "ArrowRight" && action != jump) {
+                    action = walk;
+                    held = false;
+                    velocity = 0;
+                } else if (event.key == "ArrowLeft") {
+                    velocity = 0;
+                }
+                else if (event.key == "k" && action != dead) {
+                    held = false;
+                }
+            });
+
 
             i = i % 15 + 1;
 
         }
 
-        document.addEventListener("keyup", (event) => {
-
-            if (event.key == "ArrowRight") {
-                action = walk;
-                held = false;
-                charSpeed = 0;
-            }
-            else if (event.key == "ArrowUp") {
-                if (action != jump) {
-                    // held = false;
-                    // y = 200;
-                }
-            } else if (event.key == "k") {
-                if (action != dead) held = false;
-            }
-        });
-
-        // console.log(i);
 
         charImage.src = action + i + ').png';
         dogImage.src = doggo + (i % 5 + 1) + '.png';
+
+        x += velocity;
 
         charSprite = new CharacterSprite(charImage, x, y, 307, 282, charSpeed);
         dogSprite = new objectSprite(dogImage, dogX, 340, 174, 108, 4);
