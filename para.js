@@ -3,7 +3,6 @@ let charSpeed = 0;
 let dogSpeed = 0;
 
 
-
 class ScrollingSprite {
     constructor(image, x, y, width, height, speed) {
         this.image = image;
@@ -109,10 +108,6 @@ window.onload = () => {
     const charImage = new Image();
 
     let i = 1;
-    let x = 100;
-    let y = 200;
-    let dogX = 1600;
-
 
     let idle = '/sprites/png/idle/Idle (';
     let walk = '/sprites/png/walk/Walk (';
@@ -138,6 +133,11 @@ window.onload = () => {
         foregroundSprite,
         foregroundSprite2
     ];
+
+    let x = 100;
+    let y = 200;
+    let dogX = 1600;
+
 
     // Draw loop
     const render = () => {
