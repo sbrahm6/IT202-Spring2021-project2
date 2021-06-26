@@ -123,7 +123,6 @@ window.onload = () => {
     let doggo = "/sprites/dog/Shepherd_run_";
 
     let action = walk;
-    let held = false;
     let velocity = 0;
 
 
@@ -158,7 +157,6 @@ window.onload = () => {
             document.addEventListener("keydown", (event) => {
                 if (event.key == "ArrowRight" && action == walk) {
                     // console.log("ArrowRight key was pressed!");
-                    held = true;
                     action = run;
                     velocity = 3;
 
@@ -171,15 +169,9 @@ window.onload = () => {
                     i = 1;
                     action = jump;
 
-                } else if (event.key == "k" && !held) {
-                    held = true;
+                } else if (event.key == "k" && action != dead) {
                     action = dead;
                     i = 1;
-                    setTimeout(() => {
-                        action = walk;
-                        i = 15;
-                        alert("Dead");
-                    }, 72 * (15 - i));  //calculated ~72 ms per animation frame (15 total)
                     // FUNCTION CALL
 
                 }
@@ -195,18 +187,18 @@ window.onload = () => {
                 velocity = (action == walk) ? 0 : velocity;
             }
 
+            if (action == dead && i == 15) {
+                alert('YOU ARE DEAD!!');
+            }
+
 
             document.addEventListener("keyup", (event) => {
 
                 if (event.key == "ArrowRight" && action != jump) {
                     action = walk;
-                    held = false;
                     velocity = 0;
                 } else if (event.key == "ArrowLeft") {
                     velocity = 0;
-                }
-                else if (event.key == "k" && action != dead) {
-                    held = false;
                 }
             });
 
