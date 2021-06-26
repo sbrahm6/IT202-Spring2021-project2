@@ -1,6 +1,15 @@
 let frames = 0;
 let charSpeed = 0;
 let dogSpeed = 0;
+let rand;
+let difficulty = 2;
+
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+}
 
 
 class ScrollingSprite {
@@ -54,8 +63,8 @@ class objectSprite {
 
     scroll() {
         this.x -= this.dx;
-        if (this.x <= -800) {
-            this.x = 800 - 1;
+        if (this.x <= 0) {
+            this.x = getRandomInt(750, 2600)
         }
     }
 
@@ -186,8 +195,6 @@ window.onload = () => {
             else if (x > 700) {
                 velocity = 0; x = 700;
             }
-            console.log(velocity);
-
 
 
             if (action == jump) {
@@ -224,9 +231,12 @@ window.onload = () => {
         dogImage.src = doggo + (i % 5 + 1) + '.png';
 
         x += velocity;
+        if (frames % 600 == 0) difficulty++;
+        if (i == 1) rand = getRandomInt(difficulty, difficulty + 7);
+        console.log(difficulty);
 
         charSprite = new CharacterSprite(charImage, x, y, 307, 282, charSpeed);
-        dogSprite = new objectSprite(dogImage, dogX, 360, 130, 81, 4);
+        dogSprite = new objectSprite(dogImage, dogX, 360, 130, 81, rand);
 
 
         if (x >= dogX - 70 && x <= dogX + 60 && action != jump && action != dead) {
