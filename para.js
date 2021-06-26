@@ -172,7 +172,7 @@ window.onload = () => {
                 } else if (event.key == "k" && action != dead) {
                     action = dead;
                     i = 1;
-                    // FUNCTION CALL
+                    // FUNCTION CALL??
 
                 }
 
@@ -180,6 +180,15 @@ window.onload = () => {
 
             // -------------------------------------------------------------------------------------------------
             // }
+            if (x < 0) {
+                velocity = 0; x = 0;
+            }
+            else if (x > 700) {
+                velocity = 0; x = 700;
+            }
+            console.log(velocity);
+
+
 
             if (action == jump) {
                 y = 4 * (i * i) - (60 * i) + 200; //equation derived through testing (parabola equation)
@@ -189,6 +198,9 @@ window.onload = () => {
 
             if (action == dead && i == 15) {
                 alert('YOU ARE DEAD!!');
+                i = 1;
+                action = walk;
+                x = 100;
             }
 
 
@@ -214,9 +226,15 @@ window.onload = () => {
         x += velocity;
 
         charSprite = new CharacterSprite(charImage, x, y, 307, 282, charSpeed);
-        dogSprite = new objectSprite(dogImage, dogX, 340, 174, 108, 4);
+        dogSprite = new objectSprite(dogImage, dogX, 360, 130, 81, 4);
 
-        // console.log(charImage.src)
+
+        if (x >= dogX - 70 && x <= dogX + 60 && action != jump && action != dead) {
+            i = 1;
+            action = dead;
+        }
+
+
 
         charSprite.draw(ctx);
         dogSprite.scroll();
