@@ -12,6 +12,53 @@ function getRandomInt(min, max) {
 }
 
 
+let i = 1;
+
+// Character Sprite Actions
+let idle = '/sprites/png/idle/Idle (';
+let walk = '/sprites/png/walk/Walk (';
+let jump = '/sprites/png/jump/Jump (';
+let run = '/sprites/png/run/Run (';
+let dead = '/sprites/png/dead/Dead (';
+
+let doggo = "/sprites/dog/Shepherd_run_";
+let coin = "/sprites/coin/goldCoin";
+
+let action = walk;
+let velocity = 0;
+
+function controls(event) {
+
+    if (event.key == "ArrowRight" && action == walk) {
+        // console.log("ArrowRight key was pressed!");
+        action = run;
+        velocity = 3;
+
+    } else if (event.key == "ArrowLeft" && action != jump) {
+        // console.log("ArrowLeft key was pressed!");
+        action = walk;
+        velocity = -3;
+    } else if (event.key == "ArrowUp" && action != jump) {
+        // console.log("ArrowUp key was pressed!");
+        i = 1;
+        action = jump;
+    } else if (event.key == "k" && action != dead) {
+        action = dead;
+        i = 1;
+    }
+}
+
+function keyup_controls(event) {
+
+    if (event.key == "ArrowRight" && action != jump) {
+        action = walk;
+        velocity = 0;
+    } else if (event.key == "ArrowLeft") {
+        velocity = 0;
+    }
+}
+
+
 class ScrollingSprite {
     constructor(image, x, y, width, height, speed) {
         this.image = image;
@@ -43,15 +90,12 @@ class CharacterSprite {
         this.height = height;
     }
 
-
     draw(ctx) {
-
         ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
 }
 
 class objectSprite {
-
     constructor(image, x, y, width, height, dx) {
         this.image = image;
         this.x = x;
@@ -82,7 +126,6 @@ class objectSprite {
 
 window.onload = () => {
 
-
     const canvas = document.getElementById("render-canvas");
     const ctx = canvas.getContext('2d');
 
@@ -112,25 +155,8 @@ window.onload = () => {
     const foregroundSprite2 = new ScrollingSprite(foregroundImage, -canvas.width, 0, canvas.width, canvas.height, 2);
 
     const dogImage = new Image();
-
-
+    const coinImage = new Image();
     const charImage = new Image();
-
-    let i = 1;
-
-    let idle = '/sprites/png/idle/Idle (';
-    let walk = '/sprites/png/walk/Walk (';
-    let jump = '/sprites/png/jump/Jump (';
-    let run = '/sprites/png/run/Run (';
-    let dead = '/sprites/png/dead/Dead (';
-
-    let doggo = "/sprites/dog/Shepherd_run_";
-
-    let action = walk;
-    let velocity = 0;
-
-
-    // let charSprite = new CharacterSprite(charImage, 100, 200, 307, 282, 0);
 
     const spriteArray = [
         backgroundSprite,
@@ -143,6 +169,7 @@ window.onload = () => {
         foregroundSprite2
     ];
 
+    // INITIAL SPRITE POSITIONING
     let x = 100;
     let y = 200;
     let dogX = 1600;
@@ -150,7 +177,7 @@ window.onload = () => {
 
     // Draw loop
     const render = () => {
-        frames += 1;
+        frames += 1; // FRAME COUNTER
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         spriteArray.forEach(sprite => {
@@ -160,35 +187,13 @@ window.onload = () => {
 
         if (frames % 4 == 0) {
 
-            // if (frames % 300 == 0) {
-
+            // Character Movement Controls using event listeners
             // ------------------------------------------------------------------------
-            document.addEventListener("keydown", (event) => {
-                if (event.key == "ArrowRight" && action == walk) {
-                    // console.log("ArrowRight key was pressed!");
-                    action = run;
-                    velocity = 3;
+            document.addEventListener("keydown", controls);
+            document.addEventListener("keyup", keyup_controls);
+            // ------------------------------------------------------------------------
 
-                } else if (event.key == "ArrowLeft" && action != jump) {
-                    // console.log("ArrowLeft key was pressed!");
-                    action = walk;
-                    velocity = -3;
-                } else if (event.key == "ArrowUp" && action != jump) {
-                    // console.log("ArrowUp key was pressed!");
-                    i = 1;
-                    action = jump;
-
-                } else if (event.key == "k" && action != dead) {
-                    action = dead;
-                    i = 1;
-                    // FUNCTION CALL??
-
-                }
-
-            });
-
-            // -------------------------------------------------------------------------------------------------
-            // }
+            // Setting the boundaries of character movement to edges of game window
             if (x < 0) {
                 velocity = 0; x = 0;
             }
@@ -196,60 +201,57 @@ window.onload = () => {
                 velocity = 0; x = 700;
             }
 
-
+            // jumping arc action formula
             if (action == jump) {
                 y = 4 * (i * i) - (60 * i) + 200; //equation derived through testing (parabola equation)
                 action = (i == 15) ? walk : jump;
                 velocity = (action == walk) ? 0 : velocity;
             }
 
-            if (action == dead && i == 15) {
-                alert('YOU ARE DEAD!!');
-                i = 1;
-                action = walk;
-                x = 100;
+            // Prevents accidental disruption of the death animation
+            if (action == dead) {
+                document.removeEventListener("keydown", controls);
+                if (i == 15) {
+                    alert('YOU ARE DEAD!!');
+                    i = 1;
+                    action = walk;
+                    x = 100;
+                }
             }
 
-
-            document.addEventListener("keyup", (event) => {
-
-                if (event.key == "ArrowRight" && action != jump) {
-                    action = walk;
-                    velocity = 0;
-                } else if (event.key == "ArrowLeft") {
-                    velocity = 0;
-                }
-            });
-
-
+            // Cycles through set of 15 character sprite animation "frames" 
             i = i % 15 + 1;
-
         }
 
-
+        // Dynamic frame cycling for sprite animations
         charImage.src = action + i + ').png';
         dogImage.src = doggo + (i % 5 + 1) + '.png';
+        coinImage.src = coin + (i % 9 + 1) + '.png';
 
+        // SET THE DIFFICULTY TO SCALE WITH TIME (EVERY 600 FRAMES)
         x += velocity;
         if (frames % 600 == 0) difficulty++;
-        if (i == 1) rand = getRandomInt(difficulty, difficulty + 7);
-        console.log(difficulty);
+        if (i == 1) rand = getRandomInt(difficulty, difficulty + 5);
 
+        // INITIALIZE SPRITE OBJECT PROPERTIES: (IMG SOURCE, LOCATION, SIZE, SPEED)
         charSprite = new CharacterSprite(charImage, x, y, 307, 282, charSpeed);
         dogSprite = new objectSprite(dogImage, dogX, 360, 130, 81, rand);
+        coinSprite = new objectSprite(coinImage, 300, 100, 32, 32, 1);
 
 
+        // SIMULATES COLLISON(OVERLAP) BETWEEN SPRITE OBJECTS AND TRIGGERS DEATH ANIMATION
         if (x >= dogX - 70 && x <= dogX + 60 && action != jump && action != dead) {
             i = 1;
             action = dead;
         }
 
-
-
+        // DRAW CANVAS FUNCTION FOR CURRENT FRAME
         charSprite.draw(ctx);
         dogSprite.scroll();
         dogX = dogSprite.x;
         dogSprite.draw(ctx);
+        coinSprite.draw(ctx);
+        coinSprite.scroll();
 
         window.requestAnimationFrame(render);
     }
