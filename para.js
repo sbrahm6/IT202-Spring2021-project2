@@ -1,8 +1,3 @@
-let frames = 0;
-let charSpeed = 0;
-let dogSpeed = 0;
-let rand;
-let difficulty = 2;
 
 
 function getRandomInt(min, max) {
@@ -96,35 +91,57 @@ class CharacterSprite {
 }
 
 class objectSprite {
-    constructor(image, x, y, width, height, dx) {
+    constructor(image, x, y, width, height, dx, show) {
         this.image = image;
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.dx = dx;
+        this.show = show;
     }
 
-    scroll() {
+    scroll(lo, hi) {
         this.x -= this.dx;
         if (this.x <= 0) {
-            this.x = getRandomInt(750, 2600)
+            console.log(this.show);
+            this.show = true;
+            this.x = getRandomInt(lo, hi);
         }
     }
 
     draw(ctx) {
-        // ctx.beginPath();
-        // ctx.arc(this.x, this.y, 40, 0, Math.PI * 2);
-        // ctx.fillStyle = "#0095DD";
-        // ctx.fill();
-        // ctx.closePath();
-
         ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-
     }
 }
 
+function component(width, height, color, x, y, type, ctx) {
+    this.type = type;
+    this.width = width;
+    this.height = height;
+    this.speedX = 0;
+    this.speedY = 0;
+    this.x = x;
+    this.y = y;
+    this.update = function () {
+        if (this.type == "text") {
+            ctx.font = this.width + " " + this.height;
+            ctx.fillStyle = color;
+            ctx.fillText(this.text, this.x, this.y);
+        } else {
+            ctx.fillStyle = color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+    }
+}
+
+
 window.onload = () => {
+
+    let frames = 0;
+    let rand;
+    let gc_rand;
+    let difficulty = 2;
 
     const canvas = document.getElementById("render-canvas");
     const ctx = canvas.getContext('2d');
@@ -172,12 +189,20 @@ window.onload = () => {
     // INITIAL SPRITE POSITIONING
     let x = 100;
     let y = 200;
-    let dogX = 1600;
+    let dog_x = 1600;
+    let gc_x = 300;
+    let score = 0;
+
+    let show1 = true, show2 = true, show3 = true;
+    let gc1, gc2, gc3;
 
 
     // Draw loop
     const render = () => {
         frames += 1; // FRAME COUNTER
+
+        if (frames == 300) alert("STOP");
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         spriteArray.forEach(sprite => {
@@ -223,7 +248,7 @@ window.onload = () => {
             i = i % 15 + 1;
         }
 
-        // Dynamic frame cycling for sprite animations
+        // Animation frame cycling for sprite animations
         charImage.src = action + i + ').png';
         dogImage.src = doggo + (i % 5 + 1) + '.png';
         coinImage.src = coin + (i % 9 + 1) + '.png';
@@ -231,27 +256,66 @@ window.onload = () => {
         // SET THE DIFFICULTY TO SCALE WITH TIME (EVERY 600 FRAMES)
         x += velocity;
         if (frames % 600 == 0) difficulty++;
-        if (i == 1) rand = getRandomInt(difficulty, difficulty + 5);
+        if (i == 1) {
+            rand = getRandomInt(difficulty, difficulty + 3);
+            gc_rand = getRandomInt(difficulty, difficulty + 1);
+        }
 
-        // INITIALIZE SPRITE OBJECT PROPERTIES: (IMG SOURCE, LOCATION, SIZE, SPEED)
-        charSprite = new CharacterSprite(charImage, x, y, 307, 282, charSpeed);
-        dogSprite = new objectSprite(dogImage, dogX, 360, 130, 81, rand);
-        coinSprite = new objectSprite(coinImage, 300, 100, 32, 32, 1);
+        // INITIALIZE SPRITE: (image, x, y, width, height)
+        boy = new CharacterSprite(charImage, x, y, 307, 282);
+
+        // objectSprite parameters: (image, x, y, width, height, dx)
+        dog = new objectSprite(dogImage, dog_x, 360, 130, 81, rand);
+        gc1 = new objectSprite(coinImage, gc_x, 100, 32, 32, gc_rand, show1);
+        gc2 = new objectSprite(coinImage, gc_x + 50, 100, 32, 32, gc_rand, show2);
+        gc3 = new objectSprite(coinImage, gc_x + 100, 100, 32, 32, gc_rand, show3);
+
+        // COIN GENERATION AND COLLECTION
+        if (action == jump) {
+
+            if (x <= gc1.x && x >= gc1.x - 100) {
+                gc1.show = false; score++;
+                // console.log("gc_x: " + gc_x + "; x: " + x);
+            }
+            if (x <= gc2.x && x >= gc2.x - 100) { gc2.show = false; score++; }
+            if (x <= gc3.x && x >= gc3.x - 100) { gc3.show = false; score++; }
+        }
+
+        // COIN SCOREBOARD
+        gcScore = new component("30px", "Consolas", "black", 280, 40, "text", ctx);
+
+        gcScore.text = "SCORE: " + score;
+        gcScore.update();
 
 
         // SIMULATES COLLISON(OVERLAP) BETWEEN SPRITE OBJECTS AND TRIGGERS DEATH ANIMATION
-        if (x >= dogX - 70 && x <= dogX + 60 && action != jump && action != dead) {
+        if (x >= dog_x - 70 && x <= dog_x + 60 && action != jump && action != dead) {
             i = 1;
             action = dead;
         }
 
         // DRAW CANVAS FUNCTION FOR CURRENT FRAME
-        charSprite.draw(ctx);
-        dogSprite.scroll();
-        dogX = dogSprite.x;
-        dogSprite.draw(ctx);
-        coinSprite.draw(ctx);
-        coinSprite.scroll();
+        boy.draw(ctx);
+
+        dog.scroll(750, 2600);
+        dog_x = dog.x;
+        dog.draw(ctx);
+
+        gc1.scroll(750, 800);
+        gc_x = gc1.x;
+        show1 = gc1.show;
+        if (show1) gc1.draw(ctx);
+
+        // console.log(show1, gc1.show);
+
+
+        gc2.scroll(750, 800);
+        show2 = gc2.show;
+        if (show2) gc2.draw(ctx);
+
+        gc3.scroll(750, 800);
+        show3 = gc3.show;
+        if (show3) gc3.draw(ctx);
 
         window.requestAnimationFrame(render);
     }
