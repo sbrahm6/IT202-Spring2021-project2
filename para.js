@@ -104,8 +104,7 @@ class objectSprite {
     scroll(lo, hi) {
         this.x -= this.dx;
         if (this.x <= 0) {
-            console.log(this.show);
-            this.show = true;
+            this.show = true;                   // BUG: coins 2 & 3 never reach set condition 
             this.x = getRandomInt(lo, hi);
         }
     }
@@ -137,11 +136,6 @@ function component(width, height, color, x, y, type, ctx) {
 
 
 window.onload = () => {
-
-    let frames = 0;
-    let rand;
-    let gc_rand;
-    let difficulty = 2;
 
     const canvas = document.getElementById("render-canvas");
     const ctx = canvas.getContext('2d');
@@ -186,7 +180,13 @@ window.onload = () => {
         foregroundSprite2
     ];
 
-    // INITIAL SPRITE POSITIONING
+    // INITIALIZATION OF ESSENTIAL VARS
+
+    let frames = 0;
+    let rand;
+    let gc_rand;
+    let difficulty = 2;
+
     let x = 100;
     let y = 200;
     let dog_x = 1600;
@@ -194,14 +194,25 @@ window.onload = () => {
     let score = 0;
 
     let show1 = true, show2 = true, show3 = true;
-    let gc1, gc2, gc3;
+    let gc = [];
+    let show = [show1, show2, show3];
+    let numCoins = 3;
+    let spacing = 50;
 
 
     // Draw loop
     const render = () => {
+
         frames += 1; // FRAME COUNTER
 
-        if (frames == 300) alert("STOP");
+
+        // if (frames > 1) {
+        //     for (let c = 0; c < numCoins; c++)
+        //         console.log(gc[c].show);
+        // }
+
+
+        // if (frames == 300) alert("STOP");
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -266,24 +277,44 @@ window.onload = () => {
 
         // objectSprite parameters: (image, x, y, width, height, dx)
         dog = new objectSprite(dogImage, dog_x, 360, 130, 81, rand);
-        gc1 = new objectSprite(coinImage, gc_x, 100, 32, 32, gc_rand, show1);
-        gc2 = new objectSprite(coinImage, gc_x + 50, 100, 32, 32, gc_rand, show2);
-        gc3 = new objectSprite(coinImage, gc_x + 100, 100, 32, 32, gc_rand, show3);
+
+
+        if (frames > 100) {
+
+            console.log(frames, gc[0].show, 'x:'+ x, 'gc[0].x:' + gc[0].x);
+            // alert("FRAME halt");
+        }
+
+        for (let c = 0; c < numCoins; c++) {
+            gc[c] = new objectSprite(coinImage, gc_x, 100, 32, 32, gc_rand, show[c]);
+            gc_x += spacing;
+        }
+
+        // gc[c] = new objectSprite(coinImage, gc_x, 100, 32, 32, gc_rand, show1);
+        // gc[c] = new objectSprite(coinImage, gc_x + 50, 100, 32, 32, gc_rand, show2);
+        // gc[c] = new objectSprite(coinImage, gc_x + 100, 100, 32, 32, gc_rand, show3);
 
         // COIN GENERATION AND COLLECTION
         if (action == jump) {
 
-            if (x <= gc1.x && x >= gc1.x - 100) {
-                gc1.show = false; score++;
-                // console.log("gc_x: " + gc_x + "; x: " + x);
+            for (let c = 0; c < numCoins; c++) {
+                if (x <= gc[c].x && x >= gc[c].x - 100 && gc[c].show == true) {
+                    gc[c].show = false;
+                    score++;
+                }
+
             }
-            if (x <= gc2.x && x >= gc2.x - 100) { gc2.show = false; score++; }
-            if (x <= gc3.x && x >= gc3.x - 100) { gc3.show = false; score++; }
+
+            // if (x <= gc[c].x && x >= gc[c].x - 100) {
+            //     gc[c].show = false; score++;
+            //     // console.log("gc_x: " + gc_x + "; x: " + x);
+            // }
+            // if (x <= gc[c].x && x >= gc[c].x - 100) { gc[c].show = false; score++; }
+            // if (x <= gc[c].x && x >= gc[c].x - 100) { gc[c].show = false; score++; }
         }
 
         // COIN SCOREBOARD
         gcScore = new component("30px", "Consolas", "black", 280, 40, "text", ctx);
-
         gcScore.text = "SCORE: " + score;
         gcScore.update();
 
@@ -301,21 +332,30 @@ window.onload = () => {
         dog_x = dog.x;
         dog.draw(ctx);
 
-        gc1.scroll(750, 800);
-        gc_x = gc1.x;
-        show1 = gc1.show;
-        if (show1) gc1.draw(ctx);
+        for (let c = 0; c < numCoins; c++) {
+            gc[c].scroll(750, 800);
+            show[c] = gc[c].show;
 
-        // console.log(show1, gc1.show);
+            if (gc[c].show == true) gc[c].draw(ctx);
+        }
+        gc_x = gc[0].x;
 
 
-        gc2.scroll(750, 800);
-        show2 = gc2.show;
-        if (show2) gc2.draw(ctx);
+        // gc[c].scroll(750, 800);
+        // gc_x = gc[c].x;
+        // show1 = gc[c].show;
+        // if (show1) gc[c].draw(ctx);
 
-        gc3.scroll(750, 800);
-        show3 = gc3.show;
-        if (show3) gc3.draw(ctx);
+        // // console.log(show1, gc[c].show);
+
+
+        // gc[c].scroll(750, 800);
+        // show2 = gc[c].show;
+        // if (show2) gc[c].draw(ctx);
+
+        // gc[c].scroll(750, 800);
+        // show3 = gc[c].show;
+        // if (show3) gc[c].draw(ctx);
 
         window.requestAnimationFrame(render);
     }
