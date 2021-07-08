@@ -258,6 +258,7 @@ window.onload = () => {
                         alert('\n--->YOU ARE DEAD!!  \n\n--->Press OK to Restart<---');
                         x = 100;
                         lives = 3;
+                        score = 0;
                     }
                 }
             }
