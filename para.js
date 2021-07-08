@@ -18,6 +18,7 @@ let dead = '/sprites/png/dead/Dead (';
 
 let doggo = "/sprites/dog/Shepherd_run_";
 let coin = "/sprites/coin/goldCoin";
+let heart = "/sprites/heart/heart";
 
 let action = walk;
 let velocity = 0;
@@ -168,6 +169,7 @@ window.onload = () => {
     const dogImage = new Image();
     const coinImage = new Image();
     const charImage = new Image();
+    const heartImage = new Image();
 
     const spriteArray = [
         backgroundSprite,
@@ -186,6 +188,7 @@ window.onload = () => {
     let rand;
     let gc_rand;
     let difficulty = 2;
+    let lives = 3;
 
     let x = 100;
     let y = 200;
@@ -248,10 +251,14 @@ window.onload = () => {
             if (action == dead) {
                 document.removeEventListener("keydown", controls);
                 if (i == 15) {
-                    alert('YOU ARE DEAD!!');
-                    i = 1;
+                    lives--;
                     action = walk;
-                    x = 100;
+                    i = 1;
+                    if (lives <= 0) {
+                        alert('\n--->YOU ARE DEAD!!  \n\n--->Press OK to Restart<---');
+                        x = 100;
+                        lives = 3;
+                    }
                 }
             }
 
@@ -263,6 +270,8 @@ window.onload = () => {
         charImage.src = action + i + ').png';
         dogImage.src = doggo + (i % 5 + 1) + '.png';
         coinImage.src = coin + (i % 9 + 1) + '.png';
+        heartImage.src = heart + '.png';
+
 
         // SET THE DIFFICULTY TO SCALE WITH TIME (EVERY 600 FRAMES)
         x += velocity;
@@ -278,10 +287,15 @@ window.onload = () => {
         // objectSprite parameters: (image, x, y, width, height, dx)
         dog = new objectSprite(dogImage, dog_x, 360, 130, 81, rand);
 
+        life1 = new objectSprite(heartImage, 16, 16, 32, 32);
+        life2 = new objectSprite(heartImage, 48, 16, 32, 32);
+        life3 = new objectSprite(heartImage, 80, 16, 32, 32);
+
+        let life = [life1, life2, life3];
 
         if (frames > 100) {
 
-            console.log(frames, gc[0].show, 'x:'+ x, 'gc[0].x:' + gc[0].x);
+            // console.log(frames, gc[0].show, 'x:' + x, 'gc[0].x:' + gc[0].x);
             // alert("FRAME halt");
         }
 
@@ -326,7 +340,14 @@ window.onload = () => {
         }
 
         // DRAW CANVAS FUNCTION FOR CURRENT FRAME
+
         boy.draw(ctx);
+
+        for (let h = 0; h < lives; h++) {
+            console.log(lives);
+            life[h].draw(ctx);
+        }
+
 
         dog.scroll(750, 2600);
         dog_x = dog.x;
