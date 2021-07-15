@@ -345,7 +345,7 @@ window.onload = () => {
         boy.draw(ctx);
 
         for (let h = 0; h < lives; h++) {
-            console.log(lives);
+            // console.log(lives);
             life[h].draw(ctx);
         }
 
