@@ -10,7 +10,7 @@ function getRandomInt(min, max) {
 let i = 1;
 
 // Character Sprite Actions
-let idle = 'https://github.com/sbrahm6/IT202-Spring2021-project2/tree/master/sprites/png/idle/Idle (';
+let idle = '/sprites/png/idle/Idle (';
 let walk = '/sprites/png/walk/Walk (';
 let jump = '/sprites/png/jump/Jump (';
 let run = '/sprites/png/run/Run (';
