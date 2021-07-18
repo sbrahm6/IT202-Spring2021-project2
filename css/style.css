@@ -1,0 +1,11 @@
+.freeze {
+    pointer-events: none;
+}
+
+.hidden {
+    display: none;
+}
+
+.overlay {
+    color: black;
+}
