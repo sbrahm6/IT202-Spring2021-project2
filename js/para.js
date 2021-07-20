@@ -10,15 +10,15 @@ function getRandomInt(min, max) {
 let i = 1;
 
 // Character Sprite Actions
-let idle = '/sprites/png/idle/Idle (';
-let walk = '/sprites/png/walk/Walk (';
-let jump = '/sprites/png/jump/Jump (';
-let run = '/sprites/png/run/Run (';
-let dead = '/sprites/png/dead/Dead (';
+let idle = 'sprites/png/idle/Idle (';
+let walk = 'sprites/png/walk/Walk (';
+let jump = 'sprites/png/jump/Jump (';
+let run = 'sprites/png/run/Run (';
+let dead = 'sprites/png/dead/Dead (';
 
-let doggo = "/sprites/dog/Shepherd_run_";
-let coin = "/sprites/coin/goldCoin";
-let heart = "/sprites/heart/heart";
+let doggo = "sprites/dog/Shepherd_run_";
+let coin = "sprites/coin/goldCoin";
+let heart = "sprites/heart/heart";
 
 let action = walk;
 let velocity = 0;
@@ -142,26 +142,26 @@ window.onload = () => {
     const ctx = canvas.getContext('2d');
 
     const backgroundImage = new Image();
-    backgroundImage.src = '/sprites/seaview/seaview_sky.png';
+    backgroundImage.src = 'sprites/seaview/seaview_sky.png';
     backgroundImage.position = { x: 0, y: 0 }
 
     const backgroundSprite = new ScrollingSprite(backgroundImage, 0, 0, canvas.width, canvas.height, 0);
     const backgroundSprite2 = new ScrollingSprite(backgroundImage, -canvas.width, 0, canvas.width, canvas.height, 0);
 
     const backgroundCloudsImage = new Image();
-    backgroundCloudsImage.src = '/sprites/seaview/seaview_clouds.png';
+    backgroundCloudsImage.src = 'sprites/seaview/seaview_clouds.png';
 
     const cloudSprite = new ScrollingSprite(backgroundCloudsImage, 0, 0, canvas.width, canvas.height, .5);
     const cloudSprite2 = new ScrollingSprite(backgroundCloudsImage, -canvas.width, 0, canvas.width, canvas.height, 1);
 
     const seaImage = new Image();
-    seaImage.src = '/sprites/seaview/seaview_sea.png';
+    seaImage.src = 'sprites/seaview/seaview_sea.png';
 
     const middleSprite = new ScrollingSprite(seaImage, 0, 0, canvas.width, canvas.height, 1);
     const middleSprite2 = new ScrollingSprite(seaImage, -canvas.width, 0, canvas.width, canvas.height, 1);
 
     const foregroundImage = new Image();
-    foregroundImage.src = '/sprites/seaview/seaview_foreground_empty.png';
+    foregroundImage.src = 'sprites/seaview/seaview_foreground_empty.png';
 
     const foregroundSprite = new ScrollingSprite(foregroundImage, 0, 0, canvas.width, canvas.height, 2);
     const foregroundSprite2 = new ScrollingSprite(foregroundImage, -canvas.width, 0, canvas.width, canvas.height, 2);
