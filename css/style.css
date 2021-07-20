@@ -1,3 +1,13 @@
+canvas {
+    padding: 0;
+    margin: auto;
+    display: block;
+}
+
+body {
+    text-align: center;
+}
+
 .freeze {
     pointer-events: none;
 }
