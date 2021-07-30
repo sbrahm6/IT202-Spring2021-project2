@@ -1,6 +1,5 @@
 # IT202-Spring2021-project2
 
-Controls
 Welcome! The objective of this game is to collect as many coins as possible before losing all your lives.
 
 Use the WASD keys to move your character.
