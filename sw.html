@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Employee Search</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="./icons/icon-192x192.png">
+
+  <meta property="og:image" content="icons/icon-512x512.png">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="shortcut icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="mask-icon" href="safari-pinned-tab.svg" color="#5bbad5">
+
+
+</head>
+
+<body>
+  <form id="data">
+    <!-- <input type="text" name="department" id="department" > Department<br>
+       -->
+
+    <select name="department" id="department">
+      <option></option>
+    </select>
+
+    <input type="radio" name="salary_or_hourly" value="Hourly"> Hourly
+    <input type="radio" name="salary_or_hourly" value="Salary"> Salary
+
+  </form>
+
+  <button id="search">Search</button>
+
+  <div id="results">
+
+  </div>
+
+  <!-- <script>
+    self.addEventListener('activate', function (event) {
+
+      var cacheAllowlist = [];
+
+      event.waitUntil(
+        caches.keys().then(function (cacheNames) {
+          return Promise.all(
+            cacheNames.map(function (cacheName) {
+              if (cacheAllowlist.indexOf(cacheName) === -1) {
+                return caches.delete(cacheName);
+              }
+            })
+          );
+        })
+      );
+    });
+  </script> -->
+
+  <script>
+
+    let empData;
+
+    // get the unique department names and populate the select control
+    fetch("https://data.cityofchicago.org/resource/xzkq-xp2w.json?$select=distinct%20department")
+      .then((response) => { return response.json() })
+      .then((result) => {
+
+        // if sorting by a string value, need a more complex sort function
+        result.sort((a, b) => {
+          if (a === b) {
+            return 0;
+          }
+          return a.department < b.department ? -1 : 1;
+        });
+
+
+
+        for (let dept of result) {
+          let opt = document.createElement("option");
+          opt.innerText = dept.department;
+          // console.log(opt);
+          document.querySelector("#department").append(opt);
+
+        }
+
+
+      })
+
+    let endpoint = "https://data.cityofchicago.org/resource/xzkq-xp2w.json";
+
+    document.querySelector("#search").addEventListener("click", (e) => {
+
+      document.querySelector("#results").innerText = "fetching results";
+
+      let f = document.querySelector("form");
+      let fd = new FormData(f);
+      let sp = new URLSearchParams(fd);
+
+
+      let url = endpoint + "?" + sp.toString();
+
+      // fetch
+      fetch(url)
+        .then((response) => { return response.json() })
+        .then((data) => {
+          document.querySelector("#results").innerText = "Results found: " + data.length;
+          for (let item of data) {
+            // create a paragraph
+            let p = document.createElement("p");
+            // set the value
+            p.innerText = item["name"] + ": " + item["job_titles"];
+            // append to body
+            document.querySelector("#results").append(p);
+
+          }
+
+        })
+
+
+    });
+
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('sw.js').then(function (registration) {
+          // Registration was successful
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }, function (err) {
+          // registration failed :(
+          console.log('ServiceWorker registration failed: ', err);
+        });
+      });
+    }
+  </script>
+</body>
+
+</html>
