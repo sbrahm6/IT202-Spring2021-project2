@@ -23,7 +23,7 @@ self.addEventListener('fetch', function (event) {
     caches.match(event.request)
       .then(function (response) {
         // Cache hit - return response
-        console.log("CACHE HIT");
+        // console.log("CACHE HIT");
         if (response) {
           return response;
         }
@@ -41,10 +41,11 @@ self.addEventListener('fetch', function (event) {
             // to clone it so we have two streams.
             var responseToCache = response.clone();
 
-            caches.open(CACHE_NAME)
-              .then(function (cache) {
-                cache.put(event.request, responseToCache);
-              });
+            // caches.open(CACHE_NAME)
+            //   .then(function (cache) {
+            //     console.log("CACHE PUT");
+            //     cache.put(event.request, responseToCache);
+            //   });
 
             return response;
           }

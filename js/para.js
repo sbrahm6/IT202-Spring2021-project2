@@ -1,5 +1,4 @@
 
-
 function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -25,16 +24,16 @@ let velocity = 0;
 
 function controls(event) {
 
-    if (event.key == "ArrowRight" && action == walk) {
+    if ((event.key == "ArrowRight" || event.key == 'd') && action == walk) {
         // console.log("ArrowRight key was pressed!");
         action = run;
         velocity = 3;
 
-    } else if (event.key == "ArrowLeft" && action != jump) {
+    } else if ((event.key == "ArrowLeft" || event.key == 'a') && action != jump) {
         // console.log("ArrowLeft key was pressed!");
         action = walk;
         velocity = -3;
-    } else if (event.key == "ArrowUp" && action != jump) {
+    } else if ((event.key == "ArrowUp" || event.key == 'w') && action != jump) {
         // console.log("ArrowUp key was pressed!");
         i = 1;
         action = jump;
@@ -44,12 +43,20 @@ function controls(event) {
     }
 }
 
+window.addEventListener("keydown", event => {
+    if (event.key == "p") {
+        console.log("p keydown");
+        paused = !paused;
+    }
+});
+
+
 function keyup_controls(event) {
 
-    if (event.key == "ArrowRight" && action != jump) {
+    if ((event.key == "ArrowRight" || event.key == 'd') && action != jump) {
         action = walk;
         velocity = 0;
-    } else if (event.key == "ArrowLeft") {
+    } else if (event.key == "ArrowLeft" || event.key == 'a') {
         velocity = 0;
     }
 }
@@ -137,9 +144,11 @@ function component(width, height, color, x, y, type, ctx) {
 
 
 window.onload = () => {
+    
 
     const canvas = document.getElementById("render-canvas");
     const ctx = canvas.getContext('2d');
+
 
     const backgroundImage = new Image();
     backgroundImage.src = 'sprites/seaview/seaview_sky.png';
@@ -206,180 +215,190 @@ window.onload = () => {
     // Draw loop
     const render = () => {
 
-        frames += 1; // FRAME COUNTER
+        if (paused == true) {
+            console.log("PAUSED");
+        } else {
+
+            frames += 1; // FRAME COUNTER
 
 
-        // if (frames > 1) {
-        //     for (let c = 0; c < numCoins; c++)
-        //         console.log(gc[c].show);
-        // }
+            // if (frames > 1) {
+            //     for (let c = 0; c < numCoins; c++)
+            //         console.log(gc[c].show);
+            // }
 
 
-        // if (frames == 300) alert("STOP");
+            // if (frames == 300) alert("STOP");
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        spriteArray.forEach(sprite => {
-            sprite.scroll();
-            sprite.draw(ctx);
-        });
+            spriteArray.forEach(sprite => {
+                sprite.scroll();
+                sprite.draw(ctx);
+            });
 
-        if (frames % 4 == 0) {
+            if (frames % 4 == 0) {
 
-            // Character Movement Controls using event listeners
-            // ------------------------------------------------------------------------
-            document.addEventListener("keydown", controls);
-            document.addEventListener("keyup", keyup_controls);
-            // ------------------------------------------------------------------------
+                // Character Movement Controls using event listeners
+                // ------------------------------------------------------------------------
+                document.addEventListener("keydown", controls);
+                document.addEventListener("keyup", keyup_controls);
+                // ------------------------------------------------------------------------
 
-            // Setting the boundaries of character movement to edges of game window
-            if (x < 0) {
-                velocity = 0; x = 0;
-            }
-            else if (x > 700) {
-                velocity = 0; x = 700;
-            }
+                // Setting the boundaries of character movement to edges of game window
+                if (x < 0) {
+                    velocity = 0; x = 0;
+                }
+                else if (x > 700) {
+                    velocity = 0; x = 700;
+                }
 
-            // jumping arc action formula
-            if (action == jump) {
-                y = 4 * (i * i) - (60 * i) + 200; //equation derived through testing (parabola equation)
-                action = (i == 15) ? walk : jump;
-                velocity = (action == walk) ? 0 : velocity;
-            }
+                // jumping arc action formula
+                if (action == jump) {
+                    y = 4 * (i * i) - (60 * i) + 200; //equation derived through testing (parabola equation)
+                    action = (i == 15) ? walk : jump;
+                    velocity = (action == walk) ? 0 : velocity;
+                }
 
-            // Prevents accidental disruption of the death animation
-            if (action == dead) {
-                document.removeEventListener("keydown", controls);
-                if (i == 15) {
-                    lives--;
-                    action = walk;
-                    i = 1;
-                    if (lives <= 0) {
-                        alert('\n--->YOU ARE DEAD!!  \n\n--->Press OK to Restart<---');
-                        x = 100;
-                        lives = 3;
-                        score = 0;
+                // Prevents accidental disruption of the death animation
+                if (action == dead) {
+                    document.removeEventListener("keydown", controls);
+                    if (i == 15) {
+                        lives--;
+                        action = walk;
+                        i = 1;
+                        if (lives <= 0) {
+                            // alert('\n--->YOU ARE DEAD!!  \n\n--->Press OK to Restart<---');
+                            death();
+
+                            x = 100;
+                            lives = 3;
+                            score = 0;
+
+                        }
                     }
                 }
+
+                // Cycles through set of 15 character sprite animation "frames" 
+                i = i % 15 + 1;
             }
 
-            // Cycles through set of 15 character sprite animation "frames" 
-            i = i % 15 + 1;
-        }
-
-        // Animation frame cycling for sprite animations
-        charImage.src = action + i + ').png';
-        dogImage.src = doggo + (i % 5 + 1) + '.png';
-        coinImage.src = coin + (i % 9 + 1) + '.png';
-        heartImage.src = heart + '.png';
+            // Animation frame cycling for sprite animations
+            charImage.src = action + i + ').png';
+            dogImage.src = doggo + (i % 5 + 1) + '.png';
+            coinImage.src = coin + (i % 9 + 1) + '.png';
+            heartImage.src = heart + '.png';
 
 
-        // SET THE DIFFICULTY TO SCALE WITH TIME (EVERY 600 FRAMES)
-        x += velocity;
-        if (frames % 600 == 0) difficulty++;
-        if (i == 1) {
-            rand = getRandomInt(difficulty, difficulty + 3);
-            gc_rand = getRandomInt(difficulty, difficulty + 1);
-        }
+            // SET THE DIFFICULTY TO SCALE WITH TIME (EVERY 600 FRAMES)
+            x += velocity;
+            if (frames % 600 == 0) difficulty++;
+            if (i == 1) {
+                rand = getRandomInt(difficulty, difficulty + 3);
+                gc_rand = getRandomInt(difficulty, difficulty + 1);
+            }
 
-        // INITIALIZE SPRITE: (image, x, y, width, height)
-        boy = new CharacterSprite(charImage, x, y, 307, 282);
+            // INITIALIZE SPRITE: (image, x, y, width, height)
+            boy = new CharacterSprite(charImage, x, y, 307, 282);
 
-        // objectSprite parameters: (image, x, y, width, height, dx)
-        dog = new objectSprite(dogImage, dog_x, 360, 130, 81, rand);
+            // objectSprite parameters: (image, x, y, width, height, dx)
+            dog = new objectSprite(dogImage, dog_x, 360, 130, 81, rand);
 
-        life1 = new objectSprite(heartImage, 16, 16, 32, 32);
-        life2 = new objectSprite(heartImage, 48, 16, 32, 32);
-        life3 = new objectSprite(heartImage, 80, 16, 32, 32);
+            life1 = new objectSprite(heartImage, 16, 16, 32, 32);
+            life2 = new objectSprite(heartImage, 48, 16, 32, 32);
+            life3 = new objectSprite(heartImage, 80, 16, 32, 32);
 
-        let life = [life1, life2, life3];
+            let life = [life1, life2, life3];
 
-        if (frames > 100) {
+            if (frames > 100) {
 
-            // console.log(frames, gc[0].show, 'x:' + x, 'gc[0].x:' + gc[0].x);
-            // alert("FRAME halt");
-        }
-
-        for (let c = 0; c < numCoins; c++) {
-            gc[c] = new objectSprite(coinImage, gc_x, 100, 32, 32, gc_rand, show[c]);
-            gc_x += spacing;
-        }
-
-        // gc[c] = new objectSprite(coinImage, gc_x, 100, 32, 32, gc_rand, show1);
-        // gc[c] = new objectSprite(coinImage, gc_x + 50, 100, 32, 32, gc_rand, show2);
-        // gc[c] = new objectSprite(coinImage, gc_x + 100, 100, 32, 32, gc_rand, show3);
-
-        // COIN GENERATION AND COLLECTION
-        if (action == jump) {
+                // console.log(frames, gc[0].show, 'x:' + x, 'gc[0].x:' + gc[0].x);
+                // alert("FRAME halt");
+            }
 
             for (let c = 0; c < numCoins; c++) {
-                if (x <= gc[c].x && x >= gc[c].x - 100 && gc[c].show == true) {
-                    gc[c].show = false;
-                    score++;
-                }
-
+                gc[c] = new objectSprite(coinImage, gc_x, 100, 32, 32, gc_rand, show[c]);
+                gc_x += spacing;
             }
 
-            // if (x <= gc[c].x && x >= gc[c].x - 100) {
-            //     gc[c].show = false; score++;
-            //     // console.log("gc_x: " + gc_x + "; x: " + x);
-            // }
-            // if (x <= gc[c].x && x >= gc[c].x - 100) { gc[c].show = false; score++; }
-            // if (x <= gc[c].x && x >= gc[c].x - 100) { gc[c].show = false; score++; }
+            // gc[c] = new objectSprite(coinImage, gc_x, 100, 32, 32, gc_rand, show1);
+            // gc[c] = new objectSprite(coinImage, gc_x + 50, 100, 32, 32, gc_rand, show2);
+            // gc[c] = new objectSprite(coinImage, gc_x + 100, 100, 32, 32, gc_rand, show3);
+
+            // COIN GENERATION AND COLLECTION
+            if (action == jump) {
+
+                for (let c = 0; c < numCoins; c++) {
+                    if (x <= gc[c].x && x >= gc[c].x - 100 && gc[c].show == true) {
+                        gc[c].show = false;
+                        score++;
+                    }
+
+                }
+
+                // if (x <= gc[c].x && x >= gc[c].x - 100) {
+                //     gc[c].show = false; score++;
+                //     // console.log("gc_x: " + gc_x + "; x: " + x);
+                // }
+                // if (x <= gc[c].x && x >= gc[c].x - 100) { gc[c].show = false; score++; }
+                // if (x <= gc[c].x && x >= gc[c].x - 100) { gc[c].show = false; score++; }
+            }
+
+            // COIN SCOREBOARD
+            gcScore = new component("30px", "Consolas", "black", 280, 40, "text", ctx);
+            gcScore.text = "SCORE: " + score;
+            gcScore.update();
+
+
+            // SIMULATES COLLISON(OVERLAP) BETWEEN SPRITE OBJECTS AND TRIGGERS DEATH ANIMATION
+            if (x >= dog_x - 70 && x <= dog_x + 60 && action != jump && action != dead) {
+                i = 1;
+                action = dead;
+            }
+
+            // DRAW CANVAS FUNCTION FOR CURRENT FRAME
+
+            boy.draw(ctx);
+
+            for (let h = 0; h < lives; h++) {
+                // console.log(lives);
+                life[h].draw(ctx);
+            }
+
+
+            dog.scroll(750, 2600);
+            dog_x = dog.x;
+            dog.draw(ctx);
+
+            for (let c = 0; c < numCoins; c++) {
+                gc[c].scroll(750, 800);
+                show[c] = gc[c].show;
+
+                if (gc[c].show == true) gc[c].draw(ctx);
+            }
+            gc_x = gc[0].x;
+
+
+            // DISABLED BUGGY MULTICOIN FEATURE 
+            //
+            // gc[c].scroll(750, 800);
+            // gc_x = gc[c].x;
+            // show1 = gc[c].show;
+            // if (show1) gc[c].draw(ctx);
+            //
+            // gc[c].scroll(750, 800);
+            // show2 = gc[c].show;
+            // if (show2) gc[c].draw(ctx);
+            //
+            // gc[c].scroll(750, 800);
+            // show3 = gc[c].show;
+            // if (show3) gc[c].draw(ctx);
         }
-
-        // COIN SCOREBOARD
-        gcScore = new component("30px", "Consolas", "black", 280, 40, "text", ctx);
-        gcScore.text = "SCORE: " + score;
-        gcScore.update();
-
-
-        // SIMULATES COLLISON(OVERLAP) BETWEEN SPRITE OBJECTS AND TRIGGERS DEATH ANIMATION
-        if (x >= dog_x - 70 && x <= dog_x + 60 && action != jump && action != dead) {
-            i = 1;
-            action = dead;
-        }
-
-        // DRAW CANVAS FUNCTION FOR CURRENT FRAME
-
-        boy.draw(ctx);
-
-        for (let h = 0; h < lives; h++) {
-            // console.log(lives);
-            life[h].draw(ctx);
-        }
-
-
-        dog.scroll(750, 2600);
-        dog_x = dog.x;
-        dog.draw(ctx);
-
-        for (let c = 0; c < numCoins; c++) {
-            gc[c].scroll(750, 800);
-            show[c] = gc[c].show;
-
-            if (gc[c].show == true) gc[c].draw(ctx);
-        }
-        gc_x = gc[0].x;
-
-
-        // gc[c].scroll(750, 800);
-        // gc_x = gc[c].x;
-        // show1 = gc[c].show;
-        // if (show1) gc[c].draw(ctx);
-
-        // // console.log(show1, gc[c].show);
-
-
-        // gc[c].scroll(750, 800);
-        // show2 = gc[c].show;
-        // if (show2) gc[c].draw(ctx);
-
-        // gc[c].scroll(750, 800);
-        // show3 = gc[c].show;
-        // if (show3) gc[c].draw(ctx);
 
         window.requestAnimationFrame(render);
+
     }
+
     render();
+
 }

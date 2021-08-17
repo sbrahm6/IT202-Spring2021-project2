@@ -1,33 +1,120 @@
 <html>
 
 <head>
-    <meta name="viewport" content="width=device-width">
-
     <title>Parallax scrolling</title>
+
+    <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="css/style.css">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="./icons/icon-192x192.png">
+    <script src="js/para.js"></script>
+
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
 
 </head>
 
 <body>
-    <h1 style="text-align: center; font-family:cursive">Super Doggo Jumper</h1>
-    <canvas id="render-canvas" width="800" height="450"></canvas>
-    <script src="js/para.js"></script>
+
+
+    <!-- 
+    <button class="mdc-button foo-button">
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">Button</span>
+    </button> -->
+
+    <div class="mdc-dialog mdc-dialog--open">
+        <div class="mdc-dialog__container">
+            <div class="mdc-dialog__surface" role="alertdialog" aria-modal="true" aria-labelledby="my-dialog-title"
+                aria-describedby="my-dialog-content">
+                <div class="mdc-dialog__content" id="my-dialog-content">
+                    <div>
+                        <sub>Created by Sid Brahmbhatt</sub>
+
+                        <h1>Super Doggo Jumper</h1>
+                        <h3>Press PLAY to begin!</h3>
+                        <p>
+                            Welcome! The objective of this game is to collect as many coins as possible before losing
+                            all your
+                            lives.<br>
+                            <br>
+                            Use the Arrow keys or WASD keys to move your character. <br> Avoid the dog by jumping over
+                            it or you will
+                            lose a life!
+                            <br>
+                            The game will get progressively harder with time, making it challenging and fun! <br>
+                            <br>
+                            <strong>Good Luck!!!</strong>
+                        </p>
+                    </div>
+                </div>
+                <div class="mdc-dialog__actions">
+                    <button onclick="start()" type="button" id="button1" class="mdc-button mdc-dialog__button"
+                        data-mdc-dialog-action="start">
+                        <div class="mdc-button__ripple"></div>
+                        <span class="mdc-button__label"> <strong>PLAY</strong> </span>
+                    </button>
+                    <button onclick="start()" type="button" id="button2" class="mdc-button mdc-dialog__button"
+                        data-mdc-dialog-action="start">
+                        <div class="mdc-button__ripple"></div>
+                        <span class="mdc-button__label"> <strong>PLAY AGAIN?</strong> </span>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+        <div class="mdc-dialog__scrim"></div>
+    </div>
+
+    <style>
+        #button2 {
+            display: none;
+        }
+    </style>
+
+    <h1>Super Doggo Jumper</h1>
+
+    <sub>Created by Sid Brahmbhatt</sub>
+    <br> <br> <br>
+
+    <canvas id="render-canvas" width="800" height="450"> </canvas>
+
+    <script>
+        var paused = true;
+
+        // mdc.ripple.MDCRipple.attachTo(document.querySelector('.foo-button'));
+        var dialog = document.querySelector('.mdc-dialog');
+        var dialogContent = dialog.querySelector('#my-dialog-content');
+        var play = dialog.querySelector('#button1');
+        var playAgain = dialog.querySelector('#button2');
+
+        play.style.display = "block;"
+        playAgain.style.display = "none;"
+
+        function start() {
+            dialog.classList.remove('mdc-dialog--open');
+            paused = false;
+        }
+
+        function death() {
+            paused = true;
+            dialogContent.textContent = "YOU ARE DEAD!!";
+            play.style.display = "none"
+            playAgain.style.display = "block"
+            dialog.classList.add('mdc-dialog--open');
+        }
+    </script>
+
 
 
     <div>
-        <h2>Controls</h2>
-        <p>
-            Welcome! The objective of this game is to collect as many coins as possible before losing all your
-            lives.<br>
-            <br>
-            Use the WASD keys to move your character. <br> Avoid the dog by jumping over it or you will lose a life!
-            <br>
-            The game will get progressively harder with time, making it challenging and fun! <br>
-            <br>
-            <strong>Good Luck!!!</strong>
+        <h3>Controls</h3>
+        <p id="controls">
+            Arrow or WASD keys to move <br> Press 'P' to pause game <br> Press 'K' to auto-kill <br>
         </p>
+        <h4>CREDIT <br> Assets sourced at opengameart.org</h4>
     </div>
 
 
